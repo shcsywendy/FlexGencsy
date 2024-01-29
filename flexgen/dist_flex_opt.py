@@ -684,6 +684,7 @@ if __name__ == "__main__":
     assert len(args.percent) == 6
 
     try:
+        print("===============dist_flex_opt======================")
         run_flexgen_dist(args)
     except Exception as e:
         print(str(e))
