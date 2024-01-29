@@ -8,6 +8,7 @@ import dataclasses
 import os
 import pickle
 import time
+import sys
 from typing import Union, List, Optional
 
 import numpy as np
@@ -575,16 +576,19 @@ class TransformerLayer:
             read_buf1, read_buf2 = weight_read_buf.val
             
         # Start the timer
-        start_time = time.time()
-
+        start_time = time.time
+                    
+        print("Before self-attention forward")
         self.attention.forward(hidden, cache_read_buf, read_buf1, attention_mask,
                                cache_write_buf, i, k)
+        print("After self-attention forward")              
         # Stop the timer
         end_time = time.time()
 
        # Calculate and print the execution time
         execution_time = end_time - start_time
         print(f"Self-Attention Execution Time: {execution_time} seconds")
+        sys.stdout.flush()
                     
         self.mlp.forward(hidden, None, read_buf2, attention_mask, None, i, k)
 
