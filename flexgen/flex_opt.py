@@ -567,15 +567,38 @@ class TransformerLayer:
     def store_cache(self, cache_home, cache_write_buf, i):
         self.attention.store_cache(cache_home, cache_write_buf, i)
 
-    def forward(self, hidden, cache_read_buf, weight_read_buf, attention_mask,
+  ##  def forward(self, hidden, cache_read_buf, weight_read_buf, attention_mask,
+             ##   cache_write_buf, i, k):
+       ## if k == self.policy.num_gpu_batches - 1:
+         ##   read_buf1, read_buf2 = weight_read_buf.pop()
+       ## else:
+           ## read_buf1, read_buf2 = weight_read_buf.val
+
+      ##  self.attention.forward(hidden, cache_read_buf, read_buf1, attention_mask,
+    ##                           cache_write_buf, i, k)
+       ## self.mlp.forward(hidden, None, read_buf2, attention_mask, None, i, k)
+
+   def forward(self, hidden, cache_read_buf, weight_read_buf, attention_mask,
                 cache_write_buf, i, k):
         if k == self.policy.num_gpu_batches - 1:
             read_buf1, read_buf2 = weight_read_buf.pop()
         else:
             read_buf1, read_buf2 = weight_read_buf.val
 
+        # Start the timer
+        start_time = time.time()
+
+        # Perform self-attention operation
         self.attention.forward(hidden, cache_read_buf, read_buf1, attention_mask,
                                cache_write_buf, i, k)
+
+        # Stop the timer
+        end_time = time.time()
+
+        # Calculate and print the execution time
+        execution_time = end_time - start_time
+        print(f"Self-Attention Execution Time: {execution_time} seconds")
+
         self.mlp.forward(hidden, None, read_buf2, attention_mask, None, i, k)
 
 
